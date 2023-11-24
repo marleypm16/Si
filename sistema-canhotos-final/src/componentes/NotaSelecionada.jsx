@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-
+import axios from "axios";
 const NotaSelecionada = () => {
   const { id } = useParams();
   const [notaSelecionada, setNotaSelecionada] = useState(null);
@@ -9,9 +9,8 @@ const NotaSelecionada = () => {
   const [data, setData] = useState("");
   const [status, setStatus] = useState("");
   const [mensagem, setMensagem] = useState("");
-  const [imagem, setImagem] = useState("");
-  const [emissor,setEmissor] = useState("")
-  const [isFrameVisible, setIsFrameVisible] = useState(false);
+  const [imagem, setImagem] = useState(null);
+  const [emissor, setEmissor] = useState("");
 
   useEffect(() => {
     const getNotas = async () => {
@@ -36,24 +35,32 @@ const NotaSelecionada = () => {
     if (notaSelecionada) {
       setStatus(notaSelecionada[0].status);
       setMoto(notaSelecionada[0].motorista);
-      setData(notaSelecionada[0].data);
-      setNumNota(notaSelecionada[0].numero_da_nota);
-      setImagem(notaSelecionada[0].imagem_path);
-      setEmissor(notaSelecionada[0].id_emissor)
+      setData(notaSelecionada[0].data_emissao);
+      setNumNota(notaSelecionada[0].numero);
+      setEmissor(notaSelecionada[0].id_emissor);
     }
   }, [notaSelecionada]);
 
   const atualizarNotas = async () => {
     var notaAtualizada = {
-      numero_da_nota: numNota,
+      numero: numNota,
       status: status,
-      data: data,
+      data_emissao: data,
       motorista: moto,
-      imagem_path: imagem,
     };
+    console.log(imagem);
+    const formData = new FormData();
+    var extensao = imagem.name.split(".").pop()
+    formData.append("my-image-file", imagem, `${id}.${extensao}`);
+
     try {
+      axios
+        .post(`http://localhost:8081/notas/${id}/imagem`, formData)
+        .then((res) => {
+          console.log("Axios response: ", console.log(res.data));
+        });
       const response = await fetch(`http://localhost:8081/notas/${id}`, {
-        method: "POST",
+        method: "POST", //TODO colocar o método put
         headers: {
           "Content-Type": "application/json",
         },
@@ -70,18 +77,13 @@ const NotaSelecionada = () => {
     }
   };
 
-const openFile = (event) => {
-    var input = event.target;
 
-    setIsFrameVisible(true);
-
-    var reader = new FileReader();
-    reader.onload = function () {
-      var dataURL = reader.result;
-      setImagem(dataURL);
-    };
-    reader.readAsDataURL(input.files[0]);
-  };
+  // const handleChange = (e) => {
+  //   const formData = new FormData();
+  //   var extensao = e.target.files[0].name.split(".").pop()
+  //   formData.append("my-image-file", e.target.files[0], `${id}.${extensao}`);
+  //   setImagem(formData);
+  // };
 
   return (
     <div>
@@ -90,12 +92,8 @@ const openFile = (event) => {
       {notaSelecionada ? (
         <div>
           <h1>Numero da nota : </h1>
-          <h2>{notaSelecionada[0].numero_da_nota}</h2>
-          <select
-            name=""
-            id=""
-            onChange={(e) => setStatus(e.target.value)}
-          >
+          <h2>{notaSelecionada[0].numero}</h2>
+          <select name="" id="" onChange={(e) => setStatus(e.target.value)}>
             <option value={notaSelecionada[0].status}>
               Status Atual : {notaSelecionada[0].status}
             </option>
@@ -114,20 +112,15 @@ const openFile = (event) => {
           <h1>{new Date(data).toLocaleDateString("pt-br")}</h1>
           <button onClick={atualizarNotas}>Atualizar!</button>
           {mensagem && <p>{mensagem}</p>}
-        
-        {!imagem && (
-                     <input
+
+          <input
             type="file"
             name=""
-            onChange={(e) => {
-              openFile(e);
-            }}
+            onChange={(e) => setImagem(e.target.files[0])}
             id=""
-            accept=".jpg,.png"
+            accept=".png"
           />
-        )}
-
-         <img src={imagem} alt="" />
+          {imagem ? <img src={URL.createObjectURL(imagem)} alt="" /> : "imagem nao selecionada"}
         </div>
       ) : (
         <p>Carregando...</p>

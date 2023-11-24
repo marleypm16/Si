@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
 
 const CadastroEmissores = () => {
   const [razaoSocial, setRazaoSocial] = useState("");
@@ -8,7 +10,7 @@ const CadastroEmissores = () => {
   const [erroCnpj, setErroCnpj] = useState("");
   const [erroRazaoSocial, setErroRazaoSocial] = useState("");
 
-  const EnviarDados = (e) => {
+  const novoEmissor = (e) => {
     e.preventDefault();
     let erro = 0;
 
@@ -36,8 +38,8 @@ const CadastroEmissores = () => {
       })
         .then((response) => {
           if (response.ok) {
-            setRazaoSocial("")
-            setCnpj("")
+            setRazaoSocial("");
+            setCnpj("");
             setMensagem("Emissor cadastrado"); // Define a mensagem após o cadastro bem-sucedido
           } else {
             setMensagem("Erro ao cadastrar emissor"); // Em caso de erro no cadastro
@@ -52,36 +54,36 @@ const CadastroEmissores = () => {
 
   return (
     <>
-    <Link to="/">Voltar</Link>
-      <form onSubmit={EnviarDados} className="cadastro d-flex justify-content-center align-items-center flex-column gap-3">
+      <Link to="/">
+        <Button label="Voltar" link />
+      </Link>
+      <form
+        onSubmit={novoEmissor}
+        className="cadastro d-flex justify-content-center align-items-center flex-column gap-3"
+      >
         <h1>Cadastro de Emissores</h1>
-        <div className="form-group">
-          <label htmlFor="razaoSocial">Razão Social</label>
-          <input
-            id="razaoSocial"
-            className="form-control"
-            type="text"
+        <span className="p-float-label">
+          <InputText
+            id="username"
             value={razaoSocial}
             onChange={(e) => setRazaoSocial(e.target.value)}
           />
-          {erroRazaoSocial && <p style={{ color: "red" }}>{erroRazaoSocial}</p>}
-        </div>
+          <label htmlFor="username">Username</label>
+        </span>
+        {erroRazaoSocial && <p style={{ color: "red" }}>{erroRazaoSocial}</p>}
         <div className="form-group">
-          <label htmlFor="cnpj">CNPJ</label>
-          <input
-            id="cnpj"
-            type="text"
-            className="form-control"
-            value={cnpj}
-            onChange={(e) => setCnpj(e.target.value)}
-          />
+          <span className="p-float-label">
+            <InputText
+              id="username"
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
+            />
+            <label htmlFor="username">Cnpj</label>
+          </span>
           {erroCnpj && <p style={{ color: "red" }}>{erroCnpj}</p>}
         </div>
-        <button type="submit" className="btn btn-primary">
-          Enviar
-        </button>
+        <Button id="1" label="Cadastrar Emissor" severity="info" />
         {mensagem && <p>{mensagem}</p>} {/* Exibe a mensagem, se houver */}
-        <Link to='/'>Voltar</Link>
       </form>
     </>
   );

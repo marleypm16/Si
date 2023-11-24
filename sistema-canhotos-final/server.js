@@ -1,7 +1,7 @@
 import express from "express"
 const app = express()
 const port = 8080
-import  {get_emissores, get_emissores_especificos, new_emissor}  from "./db.js";
+import  {get_emissores, get_emissores_especificos, novo_emissor}  from "./db.js";
 
 app.use(express.json())
 app.use(function (req, res, next) {
@@ -33,7 +33,7 @@ app.get('/emissores/:id',(req,res)=>{
   });
 })
 app.post('/emissores', (req, res) => {
-  new_emissor(req.body)
+  novo_emissor(req.body)
   .then(response => {
     res.status(200).send(response);
   })

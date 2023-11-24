@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import { Button } from "primereact/button";
+import { Dropdown } from "primereact/dropdown";
 
 const PaginaInicial = () => {
   const [emissores, setEmissores] = useState([]);
-  const [emissorSelecionado, setEmissorSelecionado] = useState('');
+  const [emissorSelecionado, setEmissorSelecionado] = useState("");
   const [emissorCorrespondente, setEmissorCorrespondente] = useState(null);
 
   useEffect(() => {
@@ -28,27 +30,37 @@ const PaginaInicial = () => {
   }, []);
 
   useEffect(() => {
-    const correspondente = emissores.find((emissor) => emissor.razao_social === emissorSelecionado);
+    const correspondente = emissores.find(
+      (emissor) => emissor.razao_social === emissorSelecionado
+    );
     setEmissorCorrespondente(correspondente);
   }, [emissores, emissorSelecionado]);
 
-  const linkToRegistros = emissorCorrespondente ? `/registros/${emissorCorrespondente.razao_social}` : '/';
+  const linkToRegistros = emissorCorrespondente
+    ? `/registros/${emissorCorrespondente.id}`
+    : "/";
 
   return (
     <main className="d-flex align-items-center justify-content-center gap-2">
-        <select name="" id="" className="form-select w-25" onChange={(e) => setEmissorSelecionado(e.target.value)}>
-          <option value="">Emissores</option>
-          {emissores.length > 0 ? (
-            emissores.map((emissor) => (
-              <option key={emissor.id} value={emissor.razao_social}>
-                {emissor.razao_social}
-              </option>
-            ))
-          ) : (
-            <option value="">Sem Emissores Cadastrados</option>
-          )}
-        </select>
-        <Link to={linkToRegistros}>Ok!</Link>
+      {emissores.length > 0 ? (
+        <>
+          <Dropdown
+            value={emissorSelecionado}
+            onChange={(e) => setEmissorSelecionado(e.target.value)}
+            options={emissores.map((em) => ({ value: em.razao_social }))}
+            optionLabel="razao_social" // ou outra propriedade desejada
+            placeholder="Selecione um emissor"
+            className="w-full md:w-14rem"
+          />
+
+          <Link to={linkToRegistros}>Ok!</Link>
+        </>
+      ) : (
+        <>
+          <p value="">Sem Emissores Cadastrados</p>
+          <Link to="/cadastroemissores">Ok!</Link>
+        </>
+      )}
     </main>
   );
 };
