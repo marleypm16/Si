@@ -98,9 +98,9 @@ export const getNotaPorNumero = async (id) => {
 // }
 
 export const atualizarNotas = async (body,id,caminho_imagem) => {
-  const {numero,status,data_emissao,motorista} = body
+  const {numero,status,data_emissao,motorista,imagem} = body
   try {
-    const response = await sql`UPDATE notas SET numero = ${numero},status = ${status}, data_emissao=${data_emissao},motorista = ${motorista},caminho_imagem = ${caminho_imagem} WHERE id = ${id}`;
+    const response = await sql`UPDATE notas SET numero = ${numero},status = ${status}, data_emissao=${data_emissao},motorista = ${motorista},caminho_imagem = ${caminho_imagem},imagem=${imagem} WHERE id = ${id}`;
     return response;
   } catch (error) {
     throw error;

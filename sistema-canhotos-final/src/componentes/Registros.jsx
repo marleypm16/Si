@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { InputNumber } from "primereact/inputnumber";
+import { Button } from "primereact/button";
+import { Calendar } from "primereact/calendar";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import "primereact/resources/themes/fluent-light/theme.css";
 
 const Registros = () => {
   const { id } = useParams();
@@ -11,6 +17,13 @@ const Registros = () => {
   const [notasDoEmissorSelecionado, setNotasDoEmissorSelecionado] = useState(
     []
   );
+  const columns = [
+    { field: "numero", header: "Número da nota", link: true },
+    { field: "status", header: "Status" },
+    { field: "motorista", header: "Motorista" },
+    { field: "data_emissao", header: "Data", date: true },
+  ];
+
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
 
@@ -30,9 +43,7 @@ const Registros = () => {
   }, [id]);
   useEffect(() => {
     if (listaEmissores.length > 0) {
-      const emissor = listaEmissores.find(
-        (emissor) => emissor.id == id
-      );
+      const emissor = listaEmissores.find((emissor) => emissor.id == id);
       setEmissorSelecionado(emissor);
     }
   }, [listaEmissores, id]);
@@ -43,12 +54,15 @@ const Registros = () => {
 
   useEffect(() => {
     const getNotas = async () => {
-      const response = await fetch(`http://localhost:8081/notas/emissor/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8081/notas/emissor/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       setNotasDoEmissorSelecionado(data);
     };
@@ -65,8 +79,8 @@ const Registros = () => {
       return;
     }
 
-    const inicioRange = parseInt(inicio)
-    const fimRange = parseInt(fim)
+    const inicioRange = parseInt(inicio);
+    const fimRange = parseInt(fim);
 
     if (!(inicioRange < fimRange)) {
       setErro("O valor 'Início' deve ser menor que 'Fim' para criar notas."); // Mensagem de erro para quando o início for maior que o fim
@@ -93,29 +107,46 @@ const Registros = () => {
 
   return (
     <>
-      <Link to="/">Voltar</Link>
-      <label htmlFor="inicio">Inicio:</label>
-      <input
-        type="number"
-        id="inicio"
-        placeholder="inicio"
-        onChange={(e) => setIncio(e.target.value)}
-      />
-      <label htmlFor="fim">Fim:</label>
-      <input
-        type="number"
-        id="fim"
-        placeholder="fim"
-        onChange={(e) => setFim(e.target.value)}
-      />
-      <input
-        type="date"
-        id="data"
-        name="data"
-        onChange={(e) => setData(e.target.value)}
-      />
-      <button onClick={novas_notas}>Criar!</button>
-      {mensagem && <p>{mensagem}</p>} {/* Exibe a mensagem, se houver */}
+      <Link to="/">
+        <Button label="Voltar" link />
+      </Link>
+      <div className="d-flex justify-content-center align-items-center gap-3 mb-3">
+        <div className="card flex justify-content-center">
+          <span className="p-float-label">
+            <InputNumber
+              id="inicio-input"
+              value={inicio}
+              onValueChange={(e) => setIncio(e.value)}
+            />
+            <label htmlFor="inicio-input">Início</label>
+          </span>
+        </div>
+        <div className="card flex justify-content-center">
+          <span className="p-float-label">
+            <InputNumber
+              id="fim-input"
+              value={fim}
+              onValueChange={(e) => setFim(e.value)}
+            />
+            <label htmlFor="fim-input">Fim</label>
+          </span>
+        </div>
+        <div className="card flex justify-content-center">
+          <span className="p-float-label">
+            <Calendar
+              onChange={(e) => setData(e.value)}
+              dateFormat="dd/mm/yy"
+              value={data}
+              readOnlyInput
+              showIcon
+            />
+            <label htmlFor="birth_date">Data de Emissão</label>
+          </span>
+        </div>
+
+        <Button label="Criar Notas" onClick={novas_notas} />
+      </div>
+      {mensagem && <p>{mensagem}</p>}
       {erro && <p>{erro}</p>}
       <div className="">
         <div className="d-flex align-items-center justify-content-center">
@@ -129,31 +160,61 @@ const Registros = () => {
           )}
         </div>
         {notasDoEmissorSelecionado.length > 0 ? (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">Número da nota</th>
-                <th scope="col">Status</th>
-                <th scope="col">Motorista</th>
-                <th scope="col">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {notasDoEmissorSelecionado.map((nota, index) => (
-                <tr key={index}>
-                  <td>
-                    <a href={`/notaselecionada/${nota.id}`}>
-                      {nota.numero}
-                    </a>
-                  </td>
-                  <td>{nota.status}</td>
-                  <td>{nota.motorista}</td>
-                  <td>{formatarData(nota.data_emissao)}</td>
-                </tr>
+          <div className="card">
+            <DataTable
+              paginator
+              value={notasDoEmissorSelecionado}
+              tableStyle={{ minWidth: "50rem" }}
+              rows={5}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              sortField="numero"
+              sortOrder={1}
+            >
+              {columns.map((col) => (
+                <Column
+                  key={col.field}
+                  field={col.field}
+                  sortable
+                  header={col.header}
+                  style={{ width: "25%" }}
+                  body={(rowData) =>
+                    col.link ? (
+                      <Link to={`/notaselecionada/${rowData.id}`}>
+                        {rowData[col.field]}
+                      </Link>
+                    ) : col.date ? (
+                      formatarData(rowData[col.field])
+                    ) : (
+                      rowData[col.field]
+                    )
+                  }
+                />
               ))}
-            </tbody>
-          </table>
+            </DataTable>
+          </div>
         ) : (
+          // <table className="table">
+          //   <thead>
+          //     <tr>
+          //       <th scope="col">Número da nota</th>
+          //       <th scope="col">Status</th>
+          //       <th scope="col">Motorista</th>
+          //       <th scope="col">Data</th>
+          //     </tr>
+          //   </thead>
+          //   <tbody>
+          //     {notasDoEmissorSelecionado.map((nota, index) => (
+          //       <tr key={index}>
+          //         <td>
+          //           <a href={`/notaselecionada/${nota.id}`}>{nota.numero}</a>
+          //         </td>
+          //         <td>{nota.status}</td>
+          //         <td>{nota.motorista}</td>
+          //         <td>{formatarData(nota.data_emissao)}</td>
+          //       </tr>
+          //     ))}
+          //   </tbody>
+          // </table>
           <p>Não há notas cadastradas</p>
         )}
       </div>

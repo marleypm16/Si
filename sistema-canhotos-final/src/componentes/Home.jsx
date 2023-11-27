@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
+import "primereact/resources/themes/fluent-light/theme.css";
+import { Button } from "primereact/button";
 
 const PaginaInicial = () => {
   const [emissores, setEmissores] = useState([]);
@@ -31,34 +32,39 @@ const PaginaInicial = () => {
 
   useEffect(() => {
     const correspondente = emissores.find(
-      (emissor) => emissor.razao_social === emissorSelecionado
+      (emissor) => emissor.razao_social === emissorSelecionado.razao_social
     );
     setEmissorCorrespondente(correspondente);
   }, [emissores, emissorSelecionado]);
 
   const linkToRegistros = emissorCorrespondente
-    ? `/registros/${emissorCorrespondente.id}`
+    ? `/registros/${emissorCorrespondente.id || ""}`
     : "/";
 
   return (
     <main className="d-flex align-items-center justify-content-center gap-2">
+      
       {emissores.length > 0 ? (
         <>
           <Dropdown
             value={emissorSelecionado}
-            onChange={(e) => setEmissorSelecionado(e.target.value)}
-            options={emissores.map((em) => ({ value: em.razao_social }))}
+            onChange={(e) => setEmissorSelecionado(e.value)}
+            options={emissores}
             optionLabel="razao_social" // ou outra propriedade desejada
             placeholder="Selecione um emissor"
             className="w-full md:w-14rem"
           />
 
-          <Link to={linkToRegistros}>Ok!</Link>
+          <Link to={linkToRegistros}>
+            <Button label="Ok!" link />
+          </Link>
         </>
       ) : (
         <>
           <p value="">Sem Emissores Cadastrados</p>
-          <Link to="/cadastroemissores">Ok!</Link>
+          <Link to="/cadastroemissores">
+            <Button label="Cadastrar Emissor" link />
+          </Link>
         </>
       )}
     </main>
