@@ -14,7 +14,7 @@ const NotaSelecionada = () => {
   const [mensagem, setMensagem] = useState("");
   const [imagem, setImagem] = useState(null);
   const [emissor, setEmissor] = useState("");
-  const [mostrarImagem, setMostrarImagem] = useState(null);
+  const [mostrarImagem, setMostrarImagem] = useState("");
 
   useEffect(() => {
     const getNotas = async () => {
@@ -35,6 +35,7 @@ const NotaSelecionada = () => {
     getNotas();
   }, [id]);
 
+
   useEffect(() => {
     if (notaSelecionada) {
       setStatus(notaSelecionada[0].status);
@@ -42,9 +43,20 @@ const NotaSelecionada = () => {
       setData(notaSelecionada[0].data_emissao);
       setNumNota(notaSelecionada[0].numero);
       setEmissor(notaSelecionada[0].id_emissor);
-      setMostrarImagem(notaSelecionada[0].imagem);
+      setMostrarImagem(notaSelecionada[0].caminho_imagem);
+      console.log(notaSelecionada)
     }
   }, [notaSelecionada]);
+  const formatarData = (data) => {
+    const dataObj = new Date(data);
+    dataObj.setDate(dataObj.getDate() + 1);
+  
+    const ano = dataObj.getFullYear();
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
+    const dia = dataObj.getDate().toString().padStart(2, '0');
+  
+    return `${dia}/${mes}/${ano}`;
+  };
 
   const atualizarNotas = async () => {
     var notaAtualizada = {
@@ -52,7 +64,6 @@ const NotaSelecionada = () => {
       status: status,
       data_emissao: data,
       motorista: moto,
-      imagem: mostrarImagem,
     };
 
     const formData = new FormData();
@@ -111,14 +122,13 @@ const NotaSelecionada = () => {
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <label htmlFor="">Data :</label>
-                <label>{new Date(data).toLocaleDateString("pt-br")}</label>
+                <label>{formatarData(data)}</label>
               </div>
               <input
               type="file"
               name=""
               onChange={(e) => {
                 setImagem(e.target.files[0]);
-                setMostrarImagem(URL.createObjectURL(e.target.files[0]));
               }}
               id=""
               accept=".png"
@@ -127,11 +137,8 @@ const NotaSelecionada = () => {
 
             <div className="col-6">
               <h1>Imagem</h1>
-              {mostrarImagem ? (
                 <img src={mostrarImagem} alt="" />
-              ) : (
-                <p>Nenhuma Imagem Selecionada</p>
-              )}
+  
             </div>
           </div>
           <Button className="mt-5" onClick={atualizarNotas} label="Atualizar Nota" />

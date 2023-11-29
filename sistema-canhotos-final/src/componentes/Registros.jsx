@@ -5,6 +5,7 @@ import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+
 import "primereact/resources/themes/fluent-light/theme.css";
 
 const Registros = () => {
@@ -23,6 +24,21 @@ const Registros = () => {
     { field: "motorista", header: "Motorista" },
     { field: "data_emissao", header: "Data", date: true },
   ];
+  const [filters, setFilters] = useState({
+    numero: { value: null, matchMode: 'contains' },
+    status: { value: null, matchMode: 'contains' },
+    motorista: { value: null, matchMode: 'contains' },
+    data_emissao: { value: null, matchMode: 'contains' },
+  });
+
+  const onFilter = (e) => {
+    const { value, field } = e.filters[0];
+    let _filters = { ...filters };
+
+    _filters[field].value = value;
+
+    setFilters(_filters);
+  };
 
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
@@ -48,8 +64,14 @@ const Registros = () => {
     }
   }, [listaEmissores, id]);
   const formatarData = (data) => {
-    const dataObj = new Date(data).toLocaleDateString("pt-br");
-    return dataObj;
+    const dataObj = new Date(data);
+    dataObj.setDate(dataObj.getDate() + 1);
+
+    const ano = dataObj.getFullYear();
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, "0");
+    const dia = dataObj.getDate().toString().padStart(2, "0");
+
+    return `${dia}/${mes}/${ano}`;
   };
 
   useEffect(() => {
@@ -161,7 +183,7 @@ const Registros = () => {
         </div>
         {notasDoEmissorSelecionado.length > 0 ? (
           <div className="card">
-            <DataTable
+            {/* <DataTable
               paginator
               value={notasDoEmissorSelecionado}
               tableStyle={{ minWidth: "50rem" }}
@@ -169,12 +191,31 @@ const Registros = () => {
               rowsPerPageOptions={[5, 10, 25, 50]}
               sortField="numero"
               sortOrder={1}
+            > */}
+
+            <DataTable
+              value={notasDoEmissorSelecionado}
+              paginator
+              rows={5}
+              rowsPerPageOptions={[5, 10, 25, 50]}
+              sortField="numero"
+              sortOrder={1}
+              filters={filters}
+              onFilter={onFilter}
+              globalFilterFields={[
+                "numero",
+                "status",
+                "motorista",
+                "data_emissao",
+              ]}
+              emptyMessage="Nenhuma nota encontrada."
             >
               {columns.map((col) => (
                 <Column
                   key={col.field}
                   field={col.field}
                   sortable
+                  filter
                   header={col.header}
                   style={{ width: "25%" }}
                   body={(rowData) =>
@@ -193,28 +234,6 @@ const Registros = () => {
             </DataTable>
           </div>
         ) : (
-          // <table className="table">
-          //   <thead>
-          //     <tr>
-          //       <th scope="col">Número da nota</th>
-          //       <th scope="col">Status</th>
-          //       <th scope="col">Motorista</th>
-          //       <th scope="col">Data</th>
-          //     </tr>
-          //   </thead>
-          //   <tbody>
-          //     {notasDoEmissorSelecionado.map((nota, index) => (
-          //       <tr key={index}>
-          //         <td>
-          //           <a href={`/notaselecionada/${nota.id}`}>{nota.numero}</a>
-          //         </td>
-          //         <td>{nota.status}</td>
-          //         <td>{nota.motorista}</td>
-          //         <td>{formatarData(nota.data_emissao)}</td>
-          //       </tr>
-          //     ))}
-          //   </tbody>
-          // </table>
           <p>Não há notas cadastradas</p>
         )}
       </div>
