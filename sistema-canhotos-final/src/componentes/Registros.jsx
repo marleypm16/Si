@@ -24,21 +24,6 @@ const Registros = () => {
     { field: "motorista", header: "Motorista" },
     { field: "data_emissao", header: "Data", date: true },
   ];
-  const [filters, setFilters] = useState({
-    numero: { value: null, matchMode: 'contains' },
-    status: { value: null, matchMode: 'contains' },
-    motorista: { value: null, matchMode: 'contains' },
-    data_emissao: { value: null, matchMode: 'contains' },
-  });
-
-  const onFilter = (e) => {
-    const { value, field } = e.filters[0];
-    let _filters = { ...filters };
-
-    _filters[field].value = value;
-
-    setFilters(_filters);
-  };
 
   const [mensagem, setMensagem] = useState("");
   const [erro, setErro] = useState("");
@@ -139,6 +124,7 @@ const Registros = () => {
               id="inicio-input"
               value={inicio}
               onValueChange={(e) => setIncio(e.value)}
+              useGrouping={false}
             />
             <label htmlFor="inicio-input">Início</label>
           </span>
@@ -149,6 +135,7 @@ const Registros = () => {
               id="fim-input"
               value={fim}
               onValueChange={(e) => setFim(e.value)}
+              useGrouping={false}
             />
             <label htmlFor="fim-input">Fim</label>
           </span>
@@ -159,7 +146,6 @@ const Registros = () => {
               onChange={(e) => setData(e.value)}
               dateFormat="dd/mm/yy"
               value={data}
-              readOnlyInput
               showIcon
             />
             <label htmlFor="birth_date">Data de Emissão</label>
@@ -183,7 +169,7 @@ const Registros = () => {
         </div>
         {notasDoEmissorSelecionado.length > 0 ? (
           <div className="card">
-            {/* <DataTable
+            <DataTable
               paginator
               value={notasDoEmissorSelecionado}
               tableStyle={{ minWidth: "50rem" }}
@@ -191,24 +177,6 @@ const Registros = () => {
               rowsPerPageOptions={[5, 10, 25, 50]}
               sortField="numero"
               sortOrder={1}
-            > */}
-
-            <DataTable
-              value={notasDoEmissorSelecionado}
-              paginator
-              rows={5}
-              rowsPerPageOptions={[5, 10, 25, 50]}
-              sortField="numero"
-              sortOrder={1}
-              filters={filters}
-              onFilter={onFilter}
-              globalFilterFields={[
-                "numero",
-                "status",
-                "motorista",
-                "data_emissao",
-              ]}
-              emptyMessage="Nenhuma nota encontrada."
             >
               {columns.map((col) => (
                 <Column

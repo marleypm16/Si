@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { Image } from "primereact/image";
+
 import axios from "axios";
 
 const NotaSelecionada = () => {
@@ -13,9 +15,9 @@ const NotaSelecionada = () => {
   const [status, setStatus] = useState("");
   const [mensagem, setMensagem] = useState("");
   const [imagem, setImagem] = useState(null);
-  const [emissor, setEmissor] = useState("");
+  const [emissorId, setEmissorId] = useState("");
   const [mostrarImagem, setMostrarImagem] = useState("");
-
+  const [emissorCnpj, setEmissorCnpj] = useState(null);
   useEffect(() => {
     const getNotas = async () => {
       try {
@@ -35,40 +37,66 @@ const NotaSelecionada = () => {
     getNotas();
   }, [id]);
 
-
   useEffect(() => {
     if (notaSelecionada) {
       setStatus(notaSelecionada[0].status);
       setMoto(notaSelecionada[0].motorista);
       setData(notaSelecionada[0].data_emissao);
       setNumNota(notaSelecionada[0].numero);
-      setEmissor(notaSelecionada[0].id_emissor);
+      setEmissorId(notaSelecionada[0].id_emissor);
       setMostrarImagem(notaSelecionada[0].caminho_imagem);
-      console.log(notaSelecionada)
+
+      const getEmissor = async () => {
+        const response = await fetch(` http://localhost:8080/emissores/${emissorId} `, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        console.log(data)
+        setEmissorCnpj(data);
+      };
+      getEmissor();
     }
   }, [notaSelecionada]);
-  const formatarData = (data) => {
+  const formatarData = (data,formato) => {
     const dataObj = new Date(data);
     dataObj.setDate(dataObj.getDate() + 1);
-  
+
     const ano = dataObj.getFullYear();
-    const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0');
-    const dia = dataObj.getDate().toString().padStart(2, '0');
-  
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, "0");
+    const dia = dataObj.getDate().toString().padStart(2, "0");
+
     return `${dia}/${mes}/${ano}`;
   };
+  const formatarDataPasta = (data) => {
+    const dataObj = new Date(data);
+    dataObj.setDate(dataObj.getDate() + 1);
 
+    const ano = dataObj.getFullYear();
+    const mes = (dataObj.getMonth() + 1).toString().padStart(2, "0");
+    const dia = dataObj.getDate().toString().padStart(2, "0");
+
+    return `${ano}_${mes}_${dia}`;
+  };
   const atualizarNotas = async () => {
+    const numNotaToString = String(numNota)
     var notaAtualizada = {
       numero: numNota,
       status: status,
-      data_emissao: data,
+      data_emissao:data,
       motorista: moto,
     };
 
     const formData = new FormData();
     var extensao = imagem.name.split(".").pop();
-    formData.append("my-image-file", imagem, `${id}.${extensao}`);
+    formData.append(
+      "my-image-file",
+      imagem,
+      `${formatarDataPasta(data)}_${emissorCnpj[0].cnpj}_${numNotaToString.padStart(6, "0")}.${extensao}`
+    );
 
     try {
       axios
@@ -97,7 +125,7 @@ const NotaSelecionada = () => {
 
   return (
     <div>
-      <Link to={`/registros/${emissor}`}>
+      <Link to={`/registros/${emissorId}`}>
         <Button label="Voltar" link />
       </Link>
 
@@ -113,7 +141,7 @@ const NotaSelecionada = () => {
                 <option value="Concluído">Concluído</option>
                 <option value="Pendente">Pendente</option>
               </select>
-              <div className="d-flex justify-content-center align-items-center gap-2">
+              <div className="d-flex justify-content-center align-items-center gap-1">
                 <label htmlFor="">Motorista :</label>
                 <InputText
                   value={moto}
@@ -122,26 +150,29 @@ const NotaSelecionada = () => {
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <label htmlFor="">Data :</label>
-                <label>{formatarData(data)}</label>
+                <label>{formatarData(data,'/')}</label>
               </div>
               <input
-              type="file"
-              name=""
-              onChange={(e) => {
-                setImagem(e.target.files[0]);
-              }}
-              id=""
-              accept=".png"
-            />
+                type="file"
+                name=""
+                onChange={(e) => {
+                  setImagem(e.target.files[0]);
+                }}
+                id=""
+                accept=".png"
+              />
             </div>
 
             <div className="col-6">
               <h1>Imagem</h1>
-                <img src={mostrarImagem} alt="" />
-  
+              <Image src={mostrarImagem} alt="Image" width="250" preview />
             </div>
           </div>
-          <Button className="mt-5" onClick={atualizarNotas} label="Atualizar Nota" />
+          <Button
+            className="mt-5"
+            onClick={atualizarNotas}
+            label="Atualizar Nota"
+          />
           {mensagem && <p>{mensagem}</p>}
         </div>
       ) : (
