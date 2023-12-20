@@ -108,6 +108,9 @@ const Registros = () => {
       });
     }
     setMensagem("Notas cadastradas"); // Define a mensagem após a criação bem-sucedida das notas
+    setTimeout(() => {
+      setMensagem("")
+    }, 3000);
   };
 
   return (

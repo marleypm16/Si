@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Dropdown } from "primereact/dropdown";
 import "primereact/resources/themes/fluent-light/theme.css";
 import { Button } from "primereact/button";
-
 const PaginaInicial = () => {
   const [emissores, setEmissores] = useState([]);
   const [emissorSelecionado, setEmissorSelecionado] = useState("");
@@ -18,7 +17,7 @@ const PaginaInicial = () => {
             "Content-Type": "application/json",
           },
         });
-
+   
         const data = await response.json();
         setEmissores(data);
       } catch (error) {

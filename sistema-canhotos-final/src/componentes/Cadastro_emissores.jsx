@@ -14,6 +14,7 @@ const CadastroEmissores = () => {
   const [erroRazaoSocial, setErroRazaoSocial] = useState("");
   const [inputAlertRazaoSocial, setInputAlertRazaoSocial] = useState("");
   const [inputAlertCnpj, setInputAlertCnpj] = useState("");
+  const[corCorreto,setCorCorreto] = useState(null)
 
   const novoEmissor = (e) => {
     e.preventDefault();
@@ -50,6 +51,9 @@ const CadastroEmissores = () => {
             setRazaoSocial("");
             setCnpj("");
             setMensagem("Emissor cadastrado"); // Define a mensagem após o cadastro bem-sucedido
+            setTimeout(() => {
+              setMensagem("");
+            }, 3000);
           } else {
             setMensagem("Erro ao cadastrar emissor"); // Em caso de erro no cadastro
           }
@@ -96,7 +100,8 @@ const CadastroEmissores = () => {
         </div>
         {erroCnpj && <p style={{ color: "red" }}>{erroCnpj}</p>}
         <Button label="Cadastrar Emissor" onSubmit={novoEmissor} />
-        {mensagem && <p>{mensagem}</p>} {/* Exibe a mensagem, se houver */}
+
+            {mensagem && <p>{mensagem}</p>} {/* Exibe a mensagem, se houver */} 
       </form>
     </>
   );

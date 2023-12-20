@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useState, useEffect, } from "react";
+import { useParams, Link} from "react-router-dom";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Image } from "primereact/image";
@@ -14,10 +14,12 @@ const NotaSelecionada = () => {
   const [data, setData] = useState("");
   const [status, setStatus] = useState("");
   const [mensagem, setMensagem] = useState("");
+  const [deleteMensagem, setDeleteMensagem] = useState("");
   const [imagem, setImagem] = useState(null);
   const [emissorId, setEmissorId] = useState("");
   const [mostrarImagem, setMostrarImagem] = useState("");
   const [emissorCnpj, setEmissorCnpj] = useState(null);
+
   useEffect(() => {
     const getNotas = async () => {
       try {
@@ -83,6 +85,19 @@ const NotaSelecionada = () => {
 
     return `${ano}_${mes}_${dia}`;
   };
+
+  const deletarNota = async () =>{
+    const response = await fetch(`http://localhost:8081/notas/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    setDeleteMensagem("Nota Deletada")
+    setTimeout(() => {
+      setMensagem("")
+    }, 3000);
+  }
   const atualizarNotas = async () => {
     const numNotaToString = String(numNota);
     var notaAtualizada = {
@@ -119,6 +134,9 @@ const NotaSelecionada = () => {
 
       if (response.ok) {
         setMensagem("Nota Atualizada");
+        setTimeout(() => {
+          setMensagem("")
+        }, 3000);
       } else {
         setMensagem("Erro ao atualizar a nota");
       }
@@ -146,7 +164,7 @@ const NotaSelecionada = () => {
                 <option value="Pendente">Pendente</option>
               </select>
               <div className="d-flex justify-content-center align-items-center gap-1">
-                <label htmlFor="">Motorista :</label>
+                <label htmlFor="">Motorista:</label>
                 <InputText
                   value={moto}
                   onChange={(e) => setMoto(e.target.value)}
@@ -158,7 +176,7 @@ const NotaSelecionada = () => {
               </div>
               <input
                 type="file"
-                name=""
+                name="my-image-file"
                 onChange={(e) => {
                   setImagem(e.target.files[0]);
                 }}
@@ -170,7 +188,7 @@ const NotaSelecionada = () => {
             <div className="col-6">
               <h1>Imagem</h1>
               <Image
-                src="\\172.16.114.252\corp\PUBLIC\Canhotos\2023\12\2023_12_01_12345678910112_000001.png"
+                src=""
                 alt="Image"
                 width="250"
                 preview
@@ -182,7 +200,15 @@ const NotaSelecionada = () => {
             onClick={atualizarNotas}
             label="Atualizar Nota"
           />
+          <Link to={`/registros/${emissorId}`}>
+            <Button
+              className="mt-5"
+              onClick={deletarNota}
+              label="deletar"
+            />
+          </Link>
           {mensagem && <p>{mensagem}</p>}
+          {deleteMensagem && <p>{deleteMensagem}</p>}
         </div>
       ) : (
         <p>Carregando...</p>
