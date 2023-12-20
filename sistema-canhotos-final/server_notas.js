@@ -144,34 +144,8 @@ app.post(
     console.log("Axios POST body: ", req.body);
     res.status(200).send(imageUpload.storage);
     caminhoImagem(idNota,fileName.path)
-    console.log(destinationPath)
   }
 );
-// app.post("/notas/:id/imagem", imageUpload.array("my-image-file"), (req, res) => {
-//   const files = req.files;
-
-//   if (files && files.length > 0) {
-//     const fileName = files[0].originalname;
-
-//     // Obtém o caminho do destino do armazenamento
-//     const destinationPath = imageUpload.storage.getDestination(null, files[0], (err, destination) => {
-//       if (err) {
-//         console.error(err);
-//         return null;
-//       }
-//       return destination;
-//     });
-
-//     console.log("Caminho do destino do armazenamento:", destinationPath);
-//     console.log("Nome do arquivo:", fileName);
-//     console.log("POST request received to /notas/:id/imagem.");
-//     console.log("Axios POST body:", req.body);
-
-//     res.status(200).send({ fileName, destinationPath });
-//   } else {
-//     res.status(400).send("Nenhum arquivo recebido na solicitação.");
-//   }
-// });
 
 
 app.listen(port_notas, () => {
