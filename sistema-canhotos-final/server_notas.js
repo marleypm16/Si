@@ -9,19 +9,16 @@ import {
   atualizarNotas,
   DeletarNota,
   getNotaPorNumero,
+  caminhoImagem,
 } from "./db.js";
 const app = express();
 const port_notas = 8081;
-// const data = new Date()
-// const imageUploadPathMouth = `//172.16.114.252/corp/FINANCEIRO/CR e CP/Teste_Canhotos/${data.getMonth() + 1}`
-const imageUploadPath =
-  "//172.16.114.252/corp/FINANCEIRO/CR e CP/Teste_Canhotos";
-const storage = multer.diskStorage({
+const imageUploadPath ="//172.16.114.252/corp/PUBLIC/Canhotos/";
+const storage =  multer.diskStorage({
   destination: function (req, file, cb) {
     const filename = file.originalname;
     const monthFromFilename = extrairMesDoFileName(filename);
     const yearfromfilename = extrairAnoDoFileName(filename);
-    console.log(yearfromfilename);
 
     const pastaMes = `//172.16.114.252/corp/PUBLIC/Canhotos/${yearfromfilename}/${monthFromFilename}`;
     const pastaAno = `//172.16.114.252/corp/PUBLIC/Canhotos/${yearfromfilename}`;
@@ -35,10 +32,10 @@ const storage = multer.diskStorage({
     }
 
     cb(null, pastaMes);
+    return pastaMes
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
-    console.log(file.originalname);
   },
 });
 
@@ -46,10 +43,9 @@ const imageUpload = multer({ storage: storage });
 
 function extrairMesDoFileName(filename) {
   const parts = filename.split("_");
-  console.log(parts);
+  console.log(parts)
   if (parts) {
     const datePart = parts[1];
-    console.log(datePart);
     return datePart;
   }
   return null;
@@ -57,6 +53,8 @@ function extrairMesDoFileName(filename) {
 
 function extrairAnoDoFileName(filename) {
   const parts = filename.split("_");
+  console.log(parts)
+
   if (parts) {
     const datePart = parts[0];
     return datePart;
@@ -112,16 +110,13 @@ app.get("/notas/:id", (req, res) => {
 
 app.post("/notas/:id", (req, res) => {
   const idNota = req.params.id;
-  atualizarNotas(
-    req.body,
-    idNota,
-    `//172.16.114.252/corp/PUBLIC/Canhotos/2023/12/2023_12_01_12345678910112_000001.png`
-  )
+
+  atualizarNotas(req.body, idNota, imageUploadPath)
     .then((response) => {
       res.status(200).send(response);
     })
     .catch((error) => {
-      console.log(error); // Adicione este log de erro
+      console.log(error);
       res.status(500).send(error);
     });
 });
@@ -139,11 +134,45 @@ app.post(
   "/notas/:id/imagem",
   imageUpload.array("my-image-file"),
   (req, res) => {
+    const files = req.files
+    const idNota = req.params.id;
+
+    const fileName = files[0]
+    console.log(fileName.path)
+ 
     console.log("POST request received to /notas/:id/imagem.");
     console.log("Axios POST body: ", req.body);
-    res.status(200).send("oi");
+    res.status(200).send(imageUpload.storage);
+    caminhoImagem(idNota,fileName.path)
+    console.log(destinationPath)
   }
 );
+// app.post("/notas/:id/imagem", imageUpload.array("my-image-file"), (req, res) => {
+//   const files = req.files;
+
+//   if (files && files.length > 0) {
+//     const fileName = files[0].originalname;
+
+//     // Obtém o caminho do destino do armazenamento
+//     const destinationPath = imageUpload.storage.getDestination(null, files[0], (err, destination) => {
+//       if (err) {
+//         console.error(err);
+//         return null;
+//       }
+//       return destination;
+//     });
+
+//     console.log("Caminho do destino do armazenamento:", destinationPath);
+//     console.log("Nome do arquivo:", fileName);
+//     console.log("POST request received to /notas/:id/imagem.");
+//     console.log("Axios POST body:", req.body);
+
+//     res.status(200).send({ fileName, destinationPath });
+//   } else {
+//     res.status(400).send("Nenhum arquivo recebido na solicitação.");
+//   }
+// });
+
 
 app.listen(port_notas, () => {
   console.log("servidor Rodando");

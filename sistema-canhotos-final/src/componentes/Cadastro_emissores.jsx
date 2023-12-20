@@ -4,10 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 
 // import "primereact/resources/themes/lara-light-cyan/theme.css";
-import "primereact/resources/themes/fluent-light/theme.css"
-
-
-
+import "primereact/resources/themes/fluent-light/theme.css";
 
 const CadastroEmissores = () => {
   const [razaoSocial, setRazaoSocial] = useState("");
@@ -15,8 +12,8 @@ const CadastroEmissores = () => {
   const [mensagem, setMensagem] = useState(""); // Novo estado para controlar a exibição da mensagem
   const [erroCnpj, setErroCnpj] = useState("");
   const [erroRazaoSocial, setErroRazaoSocial] = useState("");
-  const [inputAlertRazaoSocial,setInputAlertRazaoSocial] = useState("")
-  const [inputAlertCnpj,setInputAlertCnpj] = useState("")
+  const [inputAlertRazaoSocial, setInputAlertRazaoSocial] = useState("");
+  const [inputAlertCnpj, setInputAlertCnpj] = useState("");
 
   const novoEmissor = (e) => {
     e.preventDefault();
@@ -24,21 +21,20 @@ const CadastroEmissores = () => {
 
     if (!cnpj || cnpj.length !== 14 || isNaN(Number(cnpj))) {
       setErroCnpj("Digite um CNPJ válido");
-      setInputAlertCnpj("p-invalid")
+      setInputAlertCnpj("p-invalid");
       erro += 1;
     } else {
       setErroCnpj("");
-      setInputAlertCnpj("")
+      setInputAlertCnpj("");
     }
 
     if (!razaoSocial || !isNaN(Number(razaoSocial))) {
       setErroRazaoSocial("Digite uma razão social válida");
-      setInputAlertRazaoSocial("p-invalid")
+      setInputAlertRazaoSocial("p-invalid");
       erro += 1;
     } else {
       setErroRazaoSocial("");
-      setInputAlertRazaoSocial("")
-
+      setInputAlertRazaoSocial("");
     }
 
     if (erro === 0) {
@@ -76,20 +72,30 @@ const CadastroEmissores = () => {
       >
         <h1>Cadastro de Emissores</h1>
         <div className="card flex justify-content-center">
-        <span className="p-float-label">
-                <InputText className={inputAlertRazaoSocial}  id="razaoSocial" value={razaoSocial} onChange={(e) => setRazaoSocial(e.target.value)} />
-                <label htmlFor="razaoSocial">Razão Social</label>
-            </span>
+          <span className="p-float-label">
+            <InputText
+              className={inputAlertRazaoSocial}
+              id="razaoSocial"
+              value={razaoSocial}
+              onChange={(e) => setRazaoSocial(e.target.value)}
+            />
+            <label htmlFor="razaoSocial">Razão Social</label>
+          </span>
         </div>
         {erroRazaoSocial && <p style={{ color: "red" }}>{erroRazaoSocial}</p>}
-          <div className="card flex justify-content-center">
+        <div className="card flex justify-content-center">
           <span className="p-float-label">
-                  <InputText className={inputAlertCnpj}  id="cnpj" value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
-                  <label htmlFor="cnpj">Cnpj</label>
-              </span>
-          </div>
-          {erroCnpj && <p style={{ color: "red" }}>{erroCnpj}</p>}
-        <Button label="Cadastrar Emissor" onSubmit={novoEmissor}/>
+            <InputText
+              className={inputAlertCnpj}
+              id="cnpj"
+              value={cnpj}
+              onChange={(e) => setCnpj(e.target.value)}
+            />
+            <label htmlFor="cnpj">Cnpj</label>
+          </span>
+        </div>
+        {erroCnpj && <p style={{ color: "red" }}>{erroCnpj}</p>}
+        <Button label="Cadastrar Emissor" onSubmit={novoEmissor} />
         {mensagem && <p>{mensagem}</p>} {/* Exibe a mensagem, se houver */}
       </form>
     </>

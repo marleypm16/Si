@@ -20,7 +20,6 @@ const PaginaInicial = () => {
         });
 
         const data = await response.json();
-        console.log(data);
         setEmissores(data);
       } catch (error) {
         console.error("Erro ao obter os emissores: ", error);

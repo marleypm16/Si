@@ -47,21 +47,23 @@ const NotaSelecionada = () => {
       setMostrarImagem(notaSelecionada[0].caminho_imagem);
 
       const getEmissor = async () => {
-        const response = await fetch(` http://localhost:8080/emissores/${emissorId} `, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          ` http://localhost:8080/emissores/${emissorId} `,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         const data = await response.json();
-        console.log(data)
         setEmissorCnpj(data);
       };
       getEmissor();
     }
   }, [notaSelecionada]);
-  const formatarData = (data,formato) => {
+  const formatarData = (data, formato) => {
     const dataObj = new Date(data);
     dataObj.setDate(dataObj.getDate() + 1);
 
@@ -82,11 +84,11 @@ const NotaSelecionada = () => {
     return `${ano}_${mes}_${dia}`;
   };
   const atualizarNotas = async () => {
-    const numNotaToString = String(numNota)
+    const numNotaToString = String(numNota);
     var notaAtualizada = {
       numero: numNota,
       status: status,
-      data_emissao:data,
+      data_emissao: data,
       motorista: moto,
     };
 
@@ -95,7 +97,9 @@ const NotaSelecionada = () => {
     formData.append(
       "my-image-file",
       imagem,
-      `${formatarDataPasta(data)}_${emissorCnpj[0].cnpj}_${numNotaToString.padStart(6, "0")}.${extensao}`
+      `${formatarDataPasta(data)}_${
+        emissorCnpj[0].cnpj
+      }_${numNotaToString.padStart(6, "0")}.${extensao}`
     );
 
     try {
@@ -150,7 +154,7 @@ const NotaSelecionada = () => {
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <label htmlFor="">Data :</label>
-                <label>{formatarData(data,'/')}</label>
+                <label>{formatarData(data, "/")}</label>
               </div>
               <input
                 type="file"
@@ -165,7 +169,12 @@ const NotaSelecionada = () => {
 
             <div className="col-6">
               <h1>Imagem</h1>
-              <Image src={mostrarImagem} alt="Image" width="250" preview />
+              <Image
+                src="\\172.16.114.252\corp\PUBLIC\Canhotos\2023\12\2023_12_01_12345678910112_000001.png"
+                alt="Image"
+                width="250"
+                preview
+              />
             </div>
           </div>
           <Button

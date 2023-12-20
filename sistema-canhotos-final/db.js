@@ -100,12 +100,27 @@ export const getNotaPorNumero = async (id) => {
 export const atualizarNotas = async (body,id,caminho_imagem) => {
   const {numero,status,data_emissao,motorista} = body
   try {
-    const response = await sql`UPDATE notas SET numero = ${numero},status = ${status}, data_emissao=${data_emissao},motorista = ${motorista},caminho_imagem = ${caminho_imagem} WHERE id = ${id}`;
+    const response = await sql `UPDATE notas SET numero = ${numero},status = ${status}, data_emissao=${data_emissao},motorista = ${motorista} WHERE id = ${id}`;
+
     return response;
+
   } catch (error) {
     throw error;
   }
 }
+
+export const caminhoImagem = async(id,caminho_imagem) =>{
+  try {
+    const response = await sql `UPDATE notas SET caminho_imagem = ${caminho_imagem} WHERE id = ${id}`;
+
+    return response;
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+
 
 export const nova_nota = async (body) => {
   try {
@@ -123,7 +138,7 @@ export const nova_nota = async (body) => {
 
 export const DeletarNota = async (id) =>{
   try {
-    const response = await sql`DELETE FROM notas WHERE numero_da_nota = ${id}`;
+    const response = await sql`DELETE FROM notas WHERE id = ${id}`;
     return response;
   } catch (error) {
     throw error;

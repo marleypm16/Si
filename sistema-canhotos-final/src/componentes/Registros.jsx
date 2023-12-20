@@ -80,9 +80,7 @@ const Registros = () => {
     var validarSeCompleto = inicio && fim && data;
 
     if (!validarSeCompleto) {
-      setErro(
-        "Preencha os campos 'Início', 'Fim' e 'Data' para criar novas notas."
-      );
+      setErro("Preencha os campos 'Início', 'Fim' e 'Data' para criar novas notas.");
       return;
     }
 
