@@ -13,15 +13,14 @@ import {
 } from "./db.js";
 const app = express();
 const port_notas = 8081;
-const imageUploadPath ="//172.16.114.252/corp/PUBLIC/Canhotos/";
 const storage =  multer.diskStorage({
   destination: function (req, file, cb) {
     const filename = file.originalname;
     const monthFromFilename = extrairMesDoFileName(filename);
     const yearfromfilename = extrairAnoDoFileName(filename);
 
-    const pastaMes = `//172.16.114.252/corp/PUBLIC/Canhotos/${yearfromfilename}/${monthFromFilename}`;
-    const pastaAno = `//172.16.114.252/corp/PUBLIC/Canhotos/${yearfromfilename}`;
+    const pastaMes = `//172.16.114.252/corp/PUBLIC/Canhotos/Canhotos${yearfromfilename}/${monthFromFilename}`;
+    const pastaAno = `//172.16.114.252/corp/PUBLIC/Canhotos/Canhotos${yearfromfilename}`;
 
     if (!fs.existsSync(pastaAno)) {
       // Create the month folder if it doesn't exist
@@ -67,7 +66,7 @@ app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,OPTIONS,PATCH"
+    "GET,POST,PUT,DELETE"
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -111,7 +110,7 @@ app.get("/notas/:id", (req, res) => {
 app.post("/notas/:id", (req, res) => {
   const idNota = req.params.id;
 
-  atualizarNotas(req.body, idNota, imageUploadPath)
+  atualizarNotas(req.body, idNota)
     .then((response) => {
       res.status(200).send(response);
     })
