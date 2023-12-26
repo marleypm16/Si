@@ -97,7 +97,7 @@ export const getNotaPorNumero = async (id) => {
 //   }
 // }
 
-export const atualizarNotas = async (body,id,caminho_imagem) => {
+export const atualizarNotas = async (body,id) => {
   const {numero,status,data_emissao,motorista} = body
   try {
     const response = await sql `UPDATE notas SET numero = ${numero},status = ${status}, data_emissao=${data_emissao},motorista = ${motorista} WHERE id = ${id}`;
